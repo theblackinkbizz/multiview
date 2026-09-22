@@ -3,143 +3,331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YouTube Multi-Screen Viewer</title>
+<title>MultiView Studio — Next-Gen Multi-Stream Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-dark: #0e0e13;
-    --card-bg: #161622;
-    --accent: #ff0033;
-    --accent-pro: #00d2ff;
-    --text-main: #f0f0f5;
-    --text-muted: #8e8ea0;
-    --border: #262638;
+    --bg-base: #08090d;
+    --bg-surface: #0e111a;
+    --bg-surface-elevated: #151926;
+    --bg-surface-active: #1c2233;
+    --border: #23293d;
+    --border-hover: #374160;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --brand-red: #ff2a4b;
+    --brand-red-glow: rgba(255, 42, 75, 0.25);
+    --brand-cyan: #00d2ff;
+    --brand-cyan-glow: rgba(0, 210, 255, 0.25);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
+
+  /* Header */
   header {
-    background: #14141c;
+    background: rgba(14, 17, 26, 0.85);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
-    padding: 12px 20px;
+    padding: 14px 28px;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  .brand {
-    font-weight: 700;
-    font-size: 1.15rem;
+
+  .brand-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
   }
-  .badge-tier {
-    font-size: 0.72rem;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .badge-free { background: #333348; color: #fff; }
-  .badge-pro { background: var(--accent-pro); color: #000; }
 
-  .controls-bar {
-    background: #12121a;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--brand-red), #990022);
+    border-radius: var(--radius-sm);
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px var(--brand-red-glow);
+  }
+  .brand-logo svg { width: 18px; height: 18px; fill: #fff; }
+
+  .brand-name {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .brand-name span { color: var(--brand-red); }
+
+  .tier-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid transparent;
+  }
+  .tier-free {
+    background: rgba(100, 116, 139, 0.15);
+    color: var(--text-secondary);
+    border-color: rgba(100, 116, 139, 0.3);
+  }
+  .tier-pro {
+    background: rgba(0, 210, 255, 0.12);
+    color: var(--brand-cyan);
+    border-color: rgba(0, 210, 255, 0.3);
+    box-shadow: 0 0 12px var(--brand-cyan-glow);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
     gap: 10px;
   }
-  .row-inputs {
+
+  /* Control Panel */
+  .studio-dock {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .deck-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    width: 100%;
+    gap: 10px;
   }
-  input, select, button {
-    background: #1a1a29;
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    outline: none;
-  }
-  input:focus, select:focus { border-color: var(--accent); }
-  input[type="text"] { flex: 2; min-width: 200px; }
-  input[type="number"] { width: 85px; text-align: center; }
 
+  .input-wrapper {
+    position: relative;
+    flex: 2;
+    min-width: 280px;
+  }
+  .input-wrapper svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    fill: var(--text-muted);
+  }
+  .input-wrapper input {
+    padding-left: 40px !important;
+  }
+
+  input, select, button {
+    font-family: inherit;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    outline: none;
+    transition: var(--transition);
+  }
+  input:focus, select:focus {
+    border-color: var(--brand-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
+  }
+
+  /* Screen Stepper and Presets */
+  .stepper-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    padding: 4px 6px;
+    border-radius: var(--radius-md);
+  }
+  .stepper-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 0 4px;
+  }
+  .stepper-input {
+    width: 52px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    padding: 6px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .chip-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .chip:hover {
+    background: var(--bg-surface-active);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+  }
+
+  /* Buttons */
   button {
     cursor: pointer;
     font-weight: 600;
-    transition: 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
-  button:hover { background: #26263b; }
-  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #cc0029; }
-  .btn-pro { background: #0088aa; border-color: var(--accent-pro); color: #fff; }
-  .btn-pro:hover { background: #00a4cc; }
-  .btn-danger { background: #44222a; border-color: #772233; color: #ff8899; }
-  .btn-danger:hover { background: #662233; }
+  button:hover {
+    background: var(--bg-surface-active);
+    border-color: var(--border-hover);
+  }
 
-  .screen-counter-tag {
-    font-size: 0.82rem;
+  .btn-launch {
+    background: linear-gradient(135deg, var(--brand-red), #e60026);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0 4px 14px var(--brand-red-glow);
+  }
+  .btn-launch:hover {
+    background: linear-gradient(135deg, #ff4763, var(--brand-red));
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 42, 75, 0.4);
+  }
+
+  .btn-pro-action {
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    color: var(--brand-cyan);
+  }
+  .btn-pro-action:hover {
+    background: rgba(0, 210, 255, 0.18);
+    border-color: var(--brand-cyan);
+  }
+
+  .btn-ghost-danger {
+    color: #ff6b81;
+    border-color: transparent;
+    background: transparent;
+  }
+  .btn-ghost-danger:hover {
+    background: rgba(255, 107, 129, 0.12);
+    border-color: rgba(255, 107, 129, 0.3);
+  }
+
+  .counter-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted);
-    background: #1a1a28;
-    padding: 6px 12px;
-    border-radius: 6px;
+    color: var(--text-secondary);
+    background: var(--bg-surface-elevated);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
   }
 
-  .pro-only { display: none !important; }
-  body.is-pro .pro-only { display: inline-flex !important; }
+  .pro-section { display: none !important; }
+  body.is-pro .pro-section { display: inline-flex !important; }
 
+  /* Stream Grid */
   #gridContainer {
     flex: 1;
-    padding: 16px;
+    padding: 24px 28px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
     align-content: start;
     width: 100%;
   }
 
   .stream-card {
-    background: var(--card-bg);
+    background: var(--bg-surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: transform 0.2s ease, border-color 0.2s ease;
   }
+  .stream-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+
   .stream-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 8px;
-    background: #1a1a27;
-    font-size: 0.75rem;
+    padding: 8px 12px;
+    background: var(--bg-surface-elevated);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .stream-num {
+    font-family: 'JetBrains Mono', monospace;
     color: var(--text-muted);
   }
-  .stream-header button {
-    padding: 2px 6px;
-    font-size: 0.75rem;
+
+  .stream-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .stream-actions button {
     background: transparent;
     border: none;
-    color: #ff5555;
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: var(--text-muted);
   }
+  .stream-actions button:hover {
+    background: var(--bg-surface-active);
+    color: var(--text-primary);
+  }
+  .btn-remove-stream:hover { color: var(--brand-red) !important; }
+
   .video-wrapper {
     position: relative;
     width: 100%;
@@ -156,98 +344,233 @@
     border: 0;
   }
 
-  /* Modals */
+  /* Empty State Launchpad */
+  .empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: rgba(14, 17, 26, 0.4);
+    margin: 40px auto;
+    max-width: 680px;
+    width: 100%;
+  }
+  .empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .empty-icon svg { width: 26px; height: 26px; fill: var(--text-muted); }
+  .empty-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .empty-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    max-width: 440px;
+    line-height: 1.6;
+  }
+
+  /* Modal Windows */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(4, 6, 10, 0.8);
+    backdrop-filter: blur(12px);
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 1000;
   }
-  .modal {
-    background: #1c1c28;
-    padding: 24px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 440px;
+  .modal-box {
+    background: var(--bg-surface);
     border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
   }
-  .modal h3 { margin-bottom: 12px; }
-  .modal p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .modal-box h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .modal-box p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    margin-top: auto;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">
-    <span>📺 MultiView</span>
-    <span id="tierBadge" class="badge-tier badge-free">Free User</span>
+  <div class="brand-group">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 2v8h16V8H4zm6 2l5 2.5-5 2.5V10z"/></svg>
+    </div>
+    <span class="brand-name">MultiView <span>Studio</span></span>
+    <span id="tierBadge" class="tier-pill tier-free">Free Tier</span>
   </div>
-  <div style="display:flex; gap:8px;">
-    <button id="loginProBtn" class="btn-pro" onclick="openModal('proModal')">Login Pro</button>
-    <button id="logoutProBtn" class="btn-danger" style="display:none;" onclick="logoutPro()">Logout Pro</button>
-    <button onclick="openApiModal()">API Key</button>
+
+  <div class="nav-actions">
+    <button id="loginProBtn" class="btn-pro-action" onclick="openModal('proModal')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Unlock Pro
+    </button>
+    <button id="logoutProBtn" class="btn-ghost-danger" style="display:none;" onclick="logoutPro()">
+      Logout Pro
+    </button>
+    <button onclick="openApiModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+      API
+    </button>
   </div>
 </header>
 
-<div class="controls-bar">
-  <div class="row-inputs">
-    <input type="text" id="streamInput" placeholder="Paste YouTube Video / Shorts / Live URL or ID">
-    
-    <label for="numScreensInput" style="font-size:0.8rem; color:var(--text-muted);">Screens:</label>
-    <input type="number" id="numScreensInput" value="1" min="1" max="12">
-    
-    <button class="btn-primary" id="openBtn" onclick="handleAddStream()">+ Open Screens</button>
-
-    <div id="activeCounter" class="screen-counter-tag">Active Screens: 0 / 12</div>
-
-    <input type="text" id="searchInput" class="pro-only" placeholder="Search keywords or channel...">
-    <button class="btn-pro pro-only" onclick="searchYouTube()">Search & Add</button>
-    <button class="btn-pro pro-only" onclick="playRandomFromChannel()">🎲 Channel Random</button>
-  </div>
-
-  <div class="row-inputs" style="justify-content: space-between;">
-    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-      <span style="font-size:0.8rem; color:var(--text-muted); margin-right:4px;">Controls:</span>
-      <button onclick="controlAll('playVideo')">▶ Play All</button>
-      <button onclick="controlAll('pauseVideo')">⏸ Pause All</button>
-      <button onclick="controlAll('mute')">🔇 Mute All</button>
-      <button onclick="controlAll('unMute')">🔊 Unmute All</button>
+<section class="studio-dock">
+  <div class="deck-row">
+    <!-- URL Input -->
+    <div class="input-wrapper">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <input type="text" id="streamInput" placeholder="Paste YouTube link (e.g. https://www.youtube.com/watch?v=...)">
     </div>
-    <button onclick="clearAllScreens()">Clear All</button>
-  </div>
-</div>
 
-<main id="gridContainer"></main>
+    <!-- Stepper & Quick Chips -->
+    <div class="stepper-group">
+      <span class="stepper-label">Screens:</span>
+      <input type="number" id="numScreensInput" class="stepper-input" value="12" min="1" max="12">
+      <div class="chip-group">
+        <button class="chip" onclick="setScreenQty(2)">2</button>
+        <button class="chip" onclick="setScreenQty(4)">4</button>
+        <button class="chip" onclick="setScreenQty(8)">8</button>
+        <button class="chip" onclick="setScreenQty(12)">12</button>
+        <button class="chip pro-section" onclick="setScreenQty(24)">24</button>
+      </div>
+    </div>
+
+    <button class="btn-launch" id="openBtn" onclick="handleAddStream()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      Launch Screens
+    </button>
+
+    <!-- Pro Tools -->
+    <div class="input-wrapper pro-section" style="flex:1; min-width:200px;">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchInput" placeholder="Search YouTube keywords...">
+    </div>
+    <button class="btn-pro-action pro-section" onclick="searchYouTube()">Search & Add</button>
+    <button class="btn-pro-action pro-section" onclick="playRandomFromChannel()">🎲 Channel Random</button>
+  </div>
+
+  <!-- Master Controls Bar -->
+  <div class="deck-row" style="justify-content: space-between;">
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Master Controls:</span>
+      <button onclick="controlAll('playVideo')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play All
+      </button>
+      <button onclick="controlAll('pauseVideo')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause All
+      </button>
+      <button onclick="controlAll('mute')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg> Mute All
+      </button>
+      <button onclick="controlAll('unMute')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> Unmute All
+      </button>
+    </div>
+
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div id="activeCounter" class="counter-badge">Active: 0 / 12</div>
+      <button onclick="reloadAllScreens()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg> Reload All
+      </button>
+      <button class="btn-ghost-danger" onclick="clearAllScreens()">Clear Canvas</button>
+    </div>
+  </div>
+</section>
+
+<!-- Active Video Stream Grid -->
+<main id="gridContainer">
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5a2 2 0 0 0-2-2zm0 14H3V5h18v12z"/></svg>
+    </div>
+    <div class="empty-title">Ready for Stream Playback</div>
+    <div class="empty-desc">Paste a YouTube Video, Shorts, or Live URL into the command bar above and launch your multi-view wall.</div>
+  </div>
+</main>
 
 <!-- Pro Activation Modal -->
 <div id="proModal" class="modal-overlay">
-  <div class="modal">
-    <h3>Pro Login</h3>
-    <p>Enter the Pro passcode to unlock unlimited screens and advanced tools.</p>
-    <input type="password" id="proKeyInput" placeholder="Enter Pro Key (default: PRO2026)" style="width:100%;">
+  <div class="modal-box">
+    <h3>Unlock MultiView Pro</h3>
+    <p>Activate unlimited simultaneous screens, auto-adaptive scaling, keyword search, and channel randomizer.</p>
+    <input type="password" id="proKeyInput" placeholder="Enter Access Passcode (default: PRO2026)" style="width:100%;">
     <div class="modal-actions">
       <button onclick="closeModal('proModal')">Cancel</button>
-      <button class="btn-pro" onclick="verifyProKey()">Unlock</button>
+      <button class="btn-launch" onclick="verifyProKey()">Activate</button>
     </div>
   </div>
 </div>
 
 <!-- API Key Modal -->
 <div id="apiModal" class="modal-overlay">
-  <div class="modal">
-    <h3>YouTube API Key</h3>
-    <p>Required for search and channel random video selection.</p>
+  <div class="modal-box">
+    <h3>YouTube API Credentials</h3>
+    <p>Required for YouTube search and channel random video selection. Your key is stored client-side in your browser.</p>
     <input type="text" id="apiKeyInput" placeholder="AIzaSy..." style="width:100%;">
     <div class="modal-actions">
       <button onclick="closeModal('apiModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
+      <button class="btn-launch" onclick="saveApiKey()">Save Credentials</button>
     </div>
   </div>
 </div>
+
+<footer>
+  <div>© 2026 MultiView Studio • Client-side sandboxed playback</div>
+  <div style="display:flex; gap:16px;">
+    <span>Zero Data Logging</span>
+    <span>YouTube Embedded API Compliant</span>
+  </div>
+</footer>
 
 <script>
   let isPro = false;
@@ -255,18 +578,28 @@
   let totalOpenedCount = 0;
   const FREE_MAX_ACTIVE = 12;
 
+  // Restore Pro session
   if (localStorage.getItem("mv_tier") === "pro") {
     setProState(true);
   } else {
     setProState(false);
   }
 
-  // Pure string-slicing ID Extractor (Zero regex failures)
+  function setScreenQty(qty) {
+    const input = document.getElementById("numScreensInput");
+    if (!isPro && qty > 12) {
+      alert("Free tier is limited to 12 screens. Upgrade to Pro for 24+ screens.");
+      input.value = 12;
+      return;
+    }
+    input.value = qty;
+  }
+
+  // Pure string-slicing ID Extractor
   function extractVideoId(rawUrl) {
     if (!rawUrl) return null;
     const s = rawUrl.trim();
 
-    // 1. If it has v= (standard watch URL)
     if (s.includes("v=")) {
       const afterV = s.split("v=").pop();
       const idPart = afterV.slice(0, 11);
@@ -275,7 +608,6 @@
       }
     }
 
-    // 2. If it is youtu.be, /embed/, /shorts/, or /live/
     const cleanUrl = s.split("?").shift();
     const segments = cleanUrl.split("/");
     const last = segments.pop();
@@ -283,7 +615,6 @@
       return last;
     }
 
-    // 3. Fallback: match any 11-character token
     const tokens = s.match(/[a-zA-Z0-9_-]{11}/g);
     if (tokens && tokens.length > 0) {
       return tokens.pop();
@@ -298,11 +629,17 @@
   function updateScreenCounter() {
     const current = getActiveScreenCount();
     const counterEl = document.getElementById("activeCounter");
+    const emptyState = document.getElementById("emptyState");
+
+    if (emptyState) {
+      emptyState.style.display = current === 0 ? "flex" : "none";
+    }
+
     if (counterEl) {
       if (isPro) {
-        counterEl.innerText = `Active Screens: ${current} (Pro: Unlimited)`;
+        counterEl.innerText = `Active: ${current} (Pro: Unlimited)`;
       } else {
-        counterEl.innerText = `Active Screens: ${current} / ${FREE_MAX_ACTIVE} (Free Limit)`;
+        counterEl.innerText = `Active: ${current} / ${FREE_MAX_ACTIVE}`;
       }
     }
   }
@@ -317,15 +654,14 @@
 
     const currentActive = getActiveScreenCount();
 
-    // Strict Free limit check
     if (!isPro) {
       if (currentActive >= FREE_MAX_ACTIVE) {
-        alert("Limit reached! Free users are restricted to " + FREE_MAX_ACTIVE + " total active screens.\n\nClose existing screens or click 'Login Pro' to use unlimited screens.");
+        alert("You have reached the maximum limit of 12 active screens on the Free Plan.\n\nClick 'Unlock Pro' to run unlimited streams simultaneously.");
         return;
       }
       if (currentActive + requestedCount > FREE_MAX_ACTIVE) {
         const allowed = FREE_MAX_ACTIVE - currentActive;
-        alert("Free limit: You already have " + currentActive + " active screen(s). Only " + allowed + " more screen(s) can be opened (Max 12).");
+        alert(`Free Plan allows a maximum of 12 active screens.\nOpening ${allowed} screen(s) to reach your limit.`);
         requestedCount = allowed;
       }
     }
@@ -344,7 +680,7 @@
         createScreen(videoId);
         opened++;
         updateScreenCounter();
-        setTimeout(spawnNext, 100);
+        setTimeout(spawnNext, 180);
       } else {
         openBtn.disabled = false;
         updateScreenCounter();
@@ -366,8 +702,15 @@
 
     card.innerHTML = `
       <div class="stream-header">
-        <span>Screen #${totalOpenedCount}</span>
-        <button onclick="removeScreen('${screenId}')">✕ Close</button>
+        <span class="stream-num">Stream #${totalOpenedCount}</span>
+        <div class="stream-actions">
+          <button onclick="reloadScreen('${screenId}')" title="Reload Stream">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </button>
+          <button class="btn-remove-stream" onclick="removeScreen('${screenId}')" title="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
       </div>
       <div class="video-wrapper">
         <iframe 
@@ -389,6 +732,26 @@
     };
   }
 
+  function reloadScreen(screenId) {
+    const frame = document.getElementById(`iframe-${screenId}`);
+    if (frame) {
+      const currentSrc = frame.src;
+      frame.src = "";
+      setTimeout(() => { frame.src = currentSrc; }, 100);
+    }
+  }
+
+  function reloadAllScreens() {
+    const frames = document.querySelectorAll('#gridContainer iframe');
+    frames.forEach((frame, idx) => {
+      setTimeout(() => {
+        const src = frame.src;
+        frame.src = "";
+        setTimeout(() => { frame.src = src; }, 80);
+      }, idx * 100);
+    });
+  }
+
   function removeScreen(id) {
     const card = document.getElementById(id);
     if (card) {
@@ -398,7 +761,8 @@
   }
 
   function clearAllScreens() {
-    document.getElementById("gridContainer").innerHTML = "";
+    const cards = document.querySelectorAll('#gridContainer .stream-card');
+    cards.forEach(c => c.remove());
     totalOpenedCount = 0;
     updateScreenCounter();
   }
@@ -425,16 +789,16 @@
 
     if (isPro) {
       document.body.classList.add("is-pro");
-      badge.className = "badge-tier badge-pro";
-      badge.innerText = "Pro User (Unlimited)";
+      badge.className = "tier-pill tier-pro";
+      badge.innerText = "Pro Member";
       loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline-block";
+      logoutBtn.style.display = "inline-flex";
       numInput.removeAttribute("max");
     } else {
       document.body.classList.remove("is-pro");
-      badge.className = "badge-tier badge-free";
-      badge.innerText = "Free User (Max 12)";
-      loginBtn.style.display = "inline-block";
+      badge.className = "tier-pill tier-free";
+      badge.innerText = "Free Tier (Max 12)";
+      loginBtn.style.display = "inline-flex";
       logoutBtn.style.display = "none";
       numInput.setAttribute("max", "12");
       if (parseInt(numInput.value, 10) > 12) numInput.value = "12";
@@ -451,7 +815,7 @@
       document.getElementById("proKeyInput").value = "";
       alert("Pro tier activated!");
     } else {
-      alert("Invalid Pro key.");
+      alert("Invalid Pro access key.");
     }
   }
 
@@ -459,7 +823,7 @@
     if (confirm("Are you sure you want to log out of Pro?")) {
       localStorage.removeItem("mv_tier");
       setProState(false);
-      alert("Logged out of Pro. You are now on the Free tier (Max 12 active screens).");
+      alert("Logged out of Pro. Free limits (12 screens) now apply.");
     }
   }
 
@@ -485,7 +849,7 @@
         alert("No videos found.");
       }
     } catch (err) {
-      alert("Error searching YouTube. Check your API Key and quota.");
+      alert("Error searching YouTube. Please verify your API Key.");
     }
   }
 
