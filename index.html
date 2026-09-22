@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Multi-Screen Viewer</title>
+<style>
+  :root {
+    --bg-dark: #0e0e13;
+    --card-bg: #161622;
+    --accent: #ff0033;
+    --accent-pro: #00d2ff;
+    --text-main: #f0f0f5;
+    --text-muted: #8e8ea0;
+    --border: #262638;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #14141c;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .brand {
+    font-weight: 700;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge-tier {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-free { background: #333348; color: #fff; }
+  .badge-pro { background: var(--accent-pro); color: #000; }
+
+  .controls-bar {
+    background: #12121a;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .row-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  input, select, button {
+    background: #1a1a29;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  input[type="text"] { flex: 2; min-width: 200px; }
+  input[type="number"] { width: 85px; text-align: center; }
+
+  button {
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.15s ease;
+  }
+  button:hover { background: #26263b; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #cc0029; }
+  .btn-pro { background: #0088aa; border-color: var(--accent-pro); color: #fff; }
+  .btn-pro:hover { background: #00a4cc; }
+  .btn-danger { background: #44222a; border-color: #772233; color: #ff8899; }
+  .btn-danger:hover { background: #662233; }
+
+  .screen-counter-tag {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #1a1a28;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .pro-only { display: none !important; }
+  body.is-pro .pro-only { display: inline-flex !important; }
+
+  #gridContainer {
+    flex: 1;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    align-content: start;
+    width: 100%;
+  }
+
+  .stream-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .stream-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    background: #1a1a27;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .stream-header button {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    background: transparent;
+    border: none;
+    color: #ff5555;
+  }
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0;
+    background: #000;
+  }
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Modals */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  .modal {
+    background: #1c1c28;
+    padding: 24px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 440px;
+    border: 1px solid var(--border);
+  }
+  .modal h3 { margin-bottom: 12px; }
+  .modal p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span>📺 MultiView</span>
+    <span id="tierBadge" class="badge-tier badge-free">Free User</span>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button id="loginProBtn" class="btn-pro" onclick="openModal('proModal')">Login Pro</button>
+    <button id="logoutProBtn" class="btn-danger" style="display:none;" onclick="logoutPro()">Logout Pro</button>
+    <button onclick="openApiModal()">API Key</button>
+  </div>
+</header>
+
+<div class="controls-bar">
+  <div class="row-inputs">
+    <input type="text" id="streamInput" placeholder="Paste YouTube Video / Shorts / Live URL or ID">
+    
+    <label for="numScreensInput" style="font-size:0.8rem; color:var(--text-muted);">Screens:</label>
+    <input type="number" id="numScreensInput" value="1" min="1" max="12">
+    
+    <button class="btn-primary" id="openBtn" onclick="handleAddStream()">+ Open Screens</button>
+
+    <div id="activeCounter" class="screen-counter-tag">Active Screens: 0 / 12</div>
+
+    <input type="text" id="searchInput" class="pro-only" placeholder="Search keywords or channel...">
+    <button class="btn-pro pro-only" onclick="searchYouTube()">Search & Add</button>
+    <button class="btn-pro pro-only" onclick="playRandomFromChannel()">🎲 Channel Random</button>
+  </div>
+
+  <div class="row-inputs" style="justify-content: space-between;">
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <span style="font-size:0.8rem; color:var(--text-muted); margin-right:4px;">Controls:</span>
+      <button onclick="controlAll('playVideo')">▶ Play All</button>
+      <button onclick="controlAll('pauseVideo')">⏸ Pause All</button>
+      <button onclick="controlAll('mute')">🔇 Mute All</button>
+      <button onclick="controlAll('unMute')">🔊 Unmute All</button>
+    </div>
+    <button onclick="clearAllScreens()">Clear All</button>
+  </div>
+</div>
+
+<main id="gridContainer"></main>
+
+<!-- Pro Activation Modal -->
+<div id="proModal" class="modal-overlay">
+  <div class="modal">
+    <h3>Pro Login</h3>
+    <p>Enter the Pro passcode to unlock unlimited screens and advanced tools.</p>
+    <input type="password" id="proKeyInput" placeholder="Enter Pro Key (default: PRO2026)" style="width:100%;">
+    <div class="modal-actions">
+      <button onclick="closeModal('proModal')">Cancel</button>
+      <button class="btn-pro" onclick="verifyProKey()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div id="apiModal" class="modal-overlay">
+  <div class="modal">
+    <h3>YouTube API Key</h3>
+    <p>Required for search and channel random video selection.</p>
+    <input type="text" id="apiKeyInput" placeholder="AIzaSy..." style="width:100%;">
+    <div class="modal-actions">
+      <button onclick="closeModal('apiModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let isPro = false;
+  const PRO_PASSCODE = "PRO2026";
+  let totalOpenedCount = 0;
+  const FREE_MAX_ACTIVE = 12;
+
+  if (localStorage.getItem("mv_tier") === "pro") {
+    setProState(true);
+  } else {
+    setProState(false);
+  }
+
+  // Pure string-slicing ID Extractor (Zero regex failures)
+  function extractVideoId(rawUrl) {
+    if (!rawUrl) return null;
+    const s = rawUrl.trim();
+
+    // 1. If it has v= (standard watch URL)
+    if (s.includes("v=")) {
+      const afterV = s.split("v=").pop();
+      const idPart = afterV.slice(0, 11);
+      if (idPart.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(idPart)) {
+        return idPart;
+      }
+    }
+
+    // 2. If it is youtu.be, /embed/, /shorts/, or /live/
+    const cleanUrl = s.split("?").shift();
+    const segments = cleanUrl.split("/");
+    const last = segments.pop();
+    if (last && last.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(last)) {
+      return last;
+    }
+
+    // 3. Fallback: match any 11-character token
+    const tokens = s.match(/[a-zA-Z0-9_-]{11}/g);
+    if (tokens && tokens.length > 0) {
+      return tokens.pop();
+    }
+    return null;
+  }
+
+  function getActiveScreenCount() {
+    return document.querySelectorAll('#gridContainer .stream-card').length;
+  }
+
+  function updateScreenCounter() {
+    const current = getActiveScreenCount();
+    const counterEl = document.getElementById("activeCounter");
+    if (counterEl) {
+      if (isPro) {
+        counterEl.innerText = `Active Screens: ${current} (Pro: Unlimited)`;
+      } else {
+        counterEl.innerText = `Active Screens: ${current} / ${FREE_MAX_ACTIVE} (Free Limit)`;
+      }
+    }
+  }
+
+  function handleAddStream() {
+    const input = document.getElementById("streamInput");
+    const numInput = document.getElementById("numScreensInput");
+    const openBtn = document.getElementById("openBtn");
+    
+    let requestedCount = parseInt(numInput.value, 10);
+    if (isNaN(requestedCount) || requestedCount < 1) requestedCount = 1;
+
+    const currentActive = getActiveScreenCount();
+
+    // Strict Free limit check
+    if (!isPro) {
+      if (currentActive >= FREE_MAX_ACTIVE) {
+        alert("Limit reached! Free users are restricted to " + FREE_MAX_ACTIVE + " total active screens.\n\nClose existing screens or click 'Login Pro' to use unlimited screens.");
+        return;
+      }
+      if (currentActive + requestedCount > FREE_MAX_ACTIVE) {
+        const allowed = FREE_MAX_ACTIVE - currentActive;
+        alert("Free limit: You already have " + currentActive + " active screen(s). Only " + allowed + " more screen(s) can be opened (Max 12).");
+        requestedCount = allowed;
+      }
+    }
+
+    const videoId = extractVideoId(input.value);
+    if (!videoId) {
+      alert("Invalid YouTube URL. Please copy and paste a complete video link.");
+      return;
+    }
+
+    openBtn.disabled = true;
+    let opened = 0;
+
+    function spawnNext() {
+      if (opened < requestedCount) {
+        createScreen(videoId);
+        opened++;
+        updateScreenCounter();
+        setTimeout(spawnNext, 100);
+      } else {
+        openBtn.disabled = false;
+        updateScreenCounter();
+      }
+    }
+    spawnNext();
+  }
+
+  function createScreen(videoId) {
+    totalOpenedCount++;
+    const container = document.getElementById("gridContainer");
+    const screenId = "screen-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+
+    const card = document.createElement("div");
+    card.className = "stream-card";
+    card.id = screenId;
+
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1`;
+
+    card.innerHTML = `
+      <div class="stream-header">
+        <span>Screen #${totalOpenedCount}</span>
+        <button onclick="removeScreen('${screenId}')">✕ Close</button>
+      </div>
+      <div class="video-wrapper">
+        <iframe 
+          id="iframe-${screenId}"
+          src="${embedUrl}" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+    container.appendChild(card);
+
+    const frame = document.getElementById(`iframe-${screenId}`);
+    frame.onload = function() {
+      try {
+        frame.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+        frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      } catch (e) {}
+    };
+  }
+
+  function removeScreen(id) {
+    const card = document.getElementById(id);
+    if (card) {
+      card.remove();
+      updateScreenCounter();
+    }
+  }
+
+  function clearAllScreens() {
+    document.getElementById("gridContainer").innerHTML = "";
+    totalOpenedCount = 0;
+    updateScreenCounter();
+  }
+
+  function controlAll(command) {
+    const iframes = document.querySelectorAll('#gridContainer iframe');
+    iframes.forEach(iframe => {
+      try {
+        iframe.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: command,
+          args: []
+        }), '*');
+      } catch (e) {}
+    });
+  }
+
+  function setProState(pro) {
+    isPro = pro;
+    const badge = document.getElementById("tierBadge");
+    const loginBtn = document.getElementById("loginProBtn");
+    const logoutBtn = document.getElementById("logoutProBtn");
+    const numInput = document.getElementById("numScreensInput");
+
+    if (isPro) {
+      document.body.classList.add("is-pro");
+      badge.className = "badge-tier badge-pro";
+      badge.innerText = "Pro User (Unlimited)";
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-block";
+      numInput.removeAttribute("max");
+    } else {
+      document.body.classList.remove("is-pro");
+      badge.className = "badge-tier badge-free";
+      badge.innerText = "Free User (Max 12)";
+      loginBtn.style.display = "inline-block";
+      logoutBtn.style.display = "none";
+      numInput.setAttribute("max", "12");
+      if (parseInt(numInput.value, 10) > 12) numInput.value = "12";
+    }
+    updateScreenCounter();
+  }
+
+  function verifyProKey() {
+    const key = document.getElementById("proKeyInput").value.trim();
+    if (key === PRO_PASSCODE) {
+      setProState(true);
+      localStorage.setItem("mv_tier", "pro");
+      closeModal("proModal");
+      document.getElementById("proKeyInput").value = "";
+      alert("Pro tier activated!");
+    } else {
+      alert("Invalid Pro key.");
+    }
+  }
+
+  function logoutPro() {
+    if (confirm("Are you sure you want to log out of Pro?")) {
+      localStorage.removeItem("mv_tier");
+      setProState(false);
+      alert("Logged out of Pro. You are now on the Free tier (Max 12 active screens).");
+    }
+  }
+
+  async function searchYouTube() {
+    const query = document.getElementById("searchInput").value.trim();
+    const apiKey = localStorage.getItem("yt_api_key");
+    if (!apiKey) {
+      alert("Please add a YouTube API Key in settings first.");
+      openApiModal();
+      return;
+    }
+    if (!query) return;
+
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${apiKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        createScreen(data.items[0].id.videoId);
+        updateScreenCounter();
+        document.getElementById("searchInput").value = "";
+      } else {
+        alert("No videos found.");
+      }
+    } catch (err) {
+      alert("Error searching YouTube. Check your API Key and quota.");
+    }
+  }
+
+  async function playRandomFromChannel() {
+    const channelQuery = prompt("Enter YouTube Channel Handle or Name (e.g. @MrBeast):");
+    if (!channelQuery) return;
+    const apiKey = localStorage.getItem("yt_api_key");
+    if (!apiKey) {
+      alert("Please add a YouTube API Key in settings first.");
+      openApiModal();
+      return;
+    }
+
+    try {
+      const chUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(channelQuery)}&key=${apiKey}`;
+      const chRes = await fetch(chUrl);
+      const chData = await chRes.json();
+      if (!chData.items || chData.items.length === 0) {
+        alert("Channel not found.");
+        return;
+      }
+      const channelId = chData.items[0].id.channelId;
+      const playlistId = channelId.replace(/^UC/, "UU");
+
+      const plUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistId}&maxResults=50&key=${apiKey}`;
+      const plRes = await fetch(plUrl);
+      const plData = await plRes.json();
+
+      if (plData.items && plData.items.length > 0) {
+        const randomItem = plData.items[Math.floor(Math.random() * plData.items.length)];
+        createScreen(randomItem.contentDetails.videoId);
+        updateScreenCounter();
+      } else {
+        alert("No uploaded videos found for this channel.");
+      }
+    } catch (e) {
+      alert("Could not load random video. Please verify your API Key.");
+    }
+  }
+
+  function openModal(id) { document.getElementById(id).style.display = "flex"; }
+  function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+  function openApiModal() {
+    document.getElementById("apiKeyInput").value = localStorage.getItem("yt_api_key") || "";
+    openModal("apiModal");
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById("apiKeyInput").value.trim();
+    localStorage.setItem("yt_api_key", key);
+    closeModal("apiModal");
+  }
+</script>
+</body>
+</html>
