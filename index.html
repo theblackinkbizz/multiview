@@ -3,295 +3,278 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MultiView Studio — Next-Gen Multi-Stream Wall</title>
+<title>CYBERVIEW // Next-Gen Multi-Stream Matrix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #08090d;
-    --bg-surface: #0e111a;
-    --bg-surface-elevated: #151926;
-    --bg-surface-active: #1c2233;
-    --border: #23293d;
-    --border-hover: #374160;
+    --bg-void: #030712;
+    --bg-panel: rgba(11, 15, 25, 0.75);
+    --bg-card: #0a0e1a;
+    --border-neon: #1e293b;
+    --cyan: #00f2ff;
+    --cyan-glow: rgba(0, 242, 255, 0.35);
+    --violet: #8b5cf6;
+    --violet-glow: rgba(139, 92, 246, 0.35);
+    --red: #ff0055;
+    --red-glow: rgba(255, 0, 85, 0.35);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --brand-red: #ff2a4b;
-    --brand-red-glow: rgba(255, 42, 75, 0.25);
-    --brand-cyan: #00d2ff;
-    --brand-cyan-glow: rgba(0, 210, 255, 0.25);
-    --radius-sm: 6px;
-    --radius-md: 10px;
+    --text-muted: #475569;
+    --radius-sm: 4px;
+    --radius-md: 8px;
     --radius-lg: 14px;
-    --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background-color: var(--bg-base);
+    background-color: var(--bg-void);
     color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-family: 'Rajdhani', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    position: relative;
   }
 
-  /* Header */
+  /* Cyber Grid Background Effect */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Cyber Navbar */
   header {
-    background: rgba(14, 17, 26, 0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(3, 7, 18, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
     padding: 14px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
   }
 
-  .brand-group {
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-glitch {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, #fff, var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+  }
+  .brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+    background: rgba(0, 242, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    font-weight: 700;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+
+  .header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
   }
 
-  .brand-logo {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--brand-red), #990022);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 16px var(--brand-red-glow);
-  }
-  .brand-logo svg { width: 18px; height: 18px; fill: #fff; }
-
-  .brand-name {
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: -0.02em;
-    color: #fff;
-  }
-  .brand-name span { color: var(--brand-red); }
-
-  .tier-pill {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid transparent;
-  }
-  .tier-free {
-    background: rgba(100, 116, 139, 0.15);
-    color: var(--text-secondary);
-    border-color: rgba(100, 116, 139, 0.3);
-  }
-  .tier-pro {
-    background: rgba(0, 210, 255, 0.12);
-    color: var(--brand-cyan);
-    border-color: rgba(0, 210, 255, 0.3);
-    box-shadow: 0 0 12px var(--brand-cyan-glow);
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  /* Control Panel */
-  .studio-dock {
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .deck-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .input-wrapper {
-    position: relative;
-    flex: 2;
-    min-width: 280px;
-  }
-  .input-wrapper svg {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    fill: var(--text-muted);
-  }
-  .input-wrapper input {
-    padding-left: 40px !important;
-  }
-
-  input, select, button {
-    font-family: inherit;
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    padding: 10px 14px;
-    border-radius: var(--radius-md);
-    font-size: 0.88rem;
-    outline: none;
-    transition: var(--transition);
-  }
-  input:focus, select:focus {
-    border-color: var(--brand-cyan);
-    box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
-  }
-
-  /* Screen Stepper and Presets */
-  .stepper-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border);
-    padding: 4px 6px;
-    border-radius: var(--radius-md);
-  }
-  .stepper-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    padding: 0 4px;
-  }
-  .stepper-input {
-    width: 52px;
-    text-align: center;
-    background: transparent;
-    border: none;
-    padding: 6px 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .chip-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .chip {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .chip:hover {
-    background: var(--bg-surface-active);
-    color: var(--text-primary);
-    border-color: var(--border-hover);
-  }
-
   /* Buttons */
   button {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-neon);
+    background: var(--bg-card);
+    color: var(--text-primary);
     cursor: pointer;
-    font-weight: 600;
+    transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
   }
   button:hover {
-    background: var(--bg-surface-active);
-    border-color: var(--border-hover);
-  }
-
-  .btn-launch {
-    background: linear-gradient(135deg, var(--brand-red), #e60026);
-    border: none;
-    color: #fff;
-    padding: 10px 20px;
-    box-shadow: 0 4px 14px var(--brand-red-glow);
-  }
-  .btn-launch:hover {
-    background: linear-gradient(135deg, #ff4763, var(--brand-red));
+    border-color: var(--cyan);
+    box-shadow: 0 0 14px var(--cyan-glow);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(255, 42, 75, 0.4);
   }
 
-  .btn-pro-action {
-    background: rgba(0, 210, 255, 0.1);
-    border: 1px solid rgba(0, 210, 255, 0.3);
-    color: var(--brand-cyan);
+  .btn-cyan {
+    background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(0, 242, 255, 0.05));
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan-glow);
   }
-  .btn-pro-action:hover {
-    background: rgba(0, 210, 255, 0.18);
-    border-color: var(--brand-cyan);
-  }
-
-  .btn-ghost-danger {
-    color: #ff6b81;
-    border-color: transparent;
-    background: transparent;
-  }
-  .btn-ghost-danger:hover {
-    background: rgba(255, 107, 129, 0.12);
-    border-color: rgba(255, 107, 129, 0.3);
+  .btn-cyan:hover {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 0 0 20px var(--cyan);
   }
 
-  .counter-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+  .btn-violet {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.05));
+    border-color: var(--violet);
+    color: #c4b5fd;
+    box-shadow: 0 0 14px var(--violet-glow);
+  }
+  .btn-violet:hover {
+    background: var(--violet);
+    color: #fff;
+    box-shadow: 0 0 24px var(--violet);
+  }
+
+  .btn-red {
+    background: linear-gradient(135deg, rgba(255, 0, 85, 0.2), rgba(255, 0, 85, 0.05));
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 12px var(--red-glow);
+  }
+  .btn-red:hover {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 20px var(--red);
+  }
+
+  /* Control Deck */
+  .control-dock {
+    position: relative;
+    z-index: 10;
+    background: var(--bg-panel);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-neon);
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .dock-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input, select {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-secondary);
-    background: var(--bg-surface-elevated);
-    padding: 6px 14px;
+    background: rgba(10, 14, 26, 0.9);
+    border: 1px solid var(--border-neon);
+    color: var(--text-primary);
+    padding: 10px 14px;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 14px var(--cyan-glow);
   }
 
-  .pro-section { display: none !important; }
-  body.is-pro .pro-section { display: inline-flex !important; }
+  .input-stream { flex: 2; min-width: 280px; }
+  .input-stepper {
+    width: 65px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cyan);
+  }
 
-  /* Stream Grid */
+  .chip-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .chip {
+    padding: 6px 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-neon);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .chip:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: rgba(0, 242, 255, 0.1);
+  }
+
+  .pro-tag-only { display: none !important; }
+  body.is-pro .pro-tag-only { display: inline-flex !important; }
+
+  .status-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-neon);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+  }
+  .status-pill.active {
+    color: var(--cyan);
+    border-color: rgba(0, 242, 255, 0.4);
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+
+  /* Screen Grid */
   #gridContainer {
+    position: relative;
+    z-index: 10;
     flex: 1;
     padding: 24px 28px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 16px;
     align-content: start;
     width: 100%;
   }
 
   .stream-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
+    background: var(--bg-card);
+    border: 1px solid rgba(0, 242, 255, 0.15);
     border-radius: var(--radius-md);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    transition: all 0.25s ease;
   }
   .stream-card:hover {
-    border-color: var(--border-hover);
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.25);
     transform: translateY(-2px);
   }
 
@@ -300,33 +283,25 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background: var(--bg-surface-elevated);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-secondary);
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--cyan);
   }
-  .stream-num {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-muted);
-  }
-
-  .stream-actions {
-    display: flex;
-    gap: 6px;
-  }
-  .stream-actions button {
-    background: transparent;
-    border: none;
+  .stream-header button {
     padding: 3px 6px;
-    border-radius: 4px;
+    font-size: 0.7rem;
+    border: none;
+    background: transparent;
     color: var(--text-muted);
   }
-  .stream-actions button:hover {
-    background: var(--bg-surface-active);
-    color: var(--text-primary);
+  .stream-header button:hover {
+    color: var(--red);
+    box-shadow: none;
+    transform: none;
   }
-  .btn-remove-stream:hover { color: var(--brand-red) !important; }
 
   .video-wrapper {
     position: relative;
@@ -344,8 +319,8 @@
     border: 0;
   }
 
-  /* Empty State Launchpad */
-  .empty-state {
+  /* Empty State HUD */
+  .empty-hud {
     grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
@@ -353,65 +328,56 @@
     justify-content: center;
     padding: 80px 20px;
     text-align: center;
-    border: 2px dashed var(--border);
+    border: 1px dashed rgba(0, 242, 255, 0.25);
     border-radius: var(--radius-lg);
-    background: rgba(14, 17, 26, 0.4);
-    margin: 40px auto;
+    background: rgba(11, 15, 25, 0.5);
     max-width: 680px;
+    margin: 40px auto;
     width: 100%;
   }
-  .empty-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 18px;
+  .empty-hud h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    color: var(--text-primary);
   }
-  .empty-icon svg { width: 26px; height: 26px; fill: var(--text-muted); }
-  .empty-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .empty-desc {
-    font-size: 0.88rem;
-    color: var(--text-muted);
+  .empty-hud p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
     max-width: 440px;
     line-height: 1.6;
   }
 
-  /* Modal Windows */
+  /* Modals */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(4, 6, 10, 0.8);
-    backdrop-filter: blur(12px);
+    background: rgba(3, 7, 18, 0.85);
+    backdrop-filter: blur(20px);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 1000;
   }
   .modal-box {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
+    background: #0b101e;
+    border: 1px solid rgba(0, 242, 255, 0.3);
     border-radius: var(--radius-lg);
-    padding: 28px;
+    padding: 32px;
     width: 90%;
-    max-width: 420px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    max-width: 480px;
+    box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
   }
   .modal-box h3 {
-    font-size: 1.2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    color: var(--cyan);
   }
   .modal-box p {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 20px;
@@ -419,170 +385,461 @@
   .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
   }
 
-  /* Footer */
-  footer {
-    padding: 20px 28px;
-    border-top: 1px solid var(--border);
+  /* Pricing Cards */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .plan-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-neon);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .plan-card.highlight {
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px var(--cyan-glow);
+  }
+  .plan-price {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--cyan);
+  }
+  .plan-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+  }
+
+  /* Ad Progress Box */
+  .ad-progress-box {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+  }
+  .progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--violet), var(--cyan));
+    transition: width 0.3s ease;
+  }
+
+  footer {
+    position: relative;
+    z-index: 10;
+    padding: 18px 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
     justify-content: space-between;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    background: var(--bg-surface);
-    margin-top: auto;
+    background: var(--bg-void);
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand-group">
-    <div class="brand-logo">
-      <svg viewBox="0 0 24 24"><path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 2v8h16V8H4zm6 2l5 2.5-5 2.5V10z"/></svg>
-    </div>
-    <span class="brand-name">MultiView <span>Studio</span></span>
-    <span id="tierBadge" class="tier-pill tier-free">Free Tier</span>
+  <div class="brand">
+    <span class="brand-glitch">CyberView</span>
+    <span id="tierBadge" class="brand-tag">Free Tier (12 Max)</span>
   </div>
 
-  <div class="nav-actions">
-    <button id="loginProBtn" class="btn-pro-action" onclick="openModal('proModal')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      Unlock Pro
-    </button>
-    <button id="logoutProBtn" class="btn-ghost-danger" style="display:none;" onclick="logoutPro()">
-      Logout Pro
-    </button>
-    <button onclick="openApiModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-      API
-    </button>
+  <div class="header-actions">
+    <!-- Active Countdown Clock -->
+    <div id="countdownClock" class="status-pill active" style="display:none;"></div>
+    
+    <!-- Pro & Login Buttons -->
+    <button id="upgradeBtn" class="btn-cyan" onclick="openModal('purchaseModal')">⚡ Purchase Pro (₹99)</button>
+    <button id="loginProBtn" class="btn-violet" onclick="openModal('loginModal')">Device Login</button>
+    <button id="logoutProBtn" class="btn-red" style="display:none;" onclick="logoutPro()">Logout</button>
+    <button onclick="openModal('apiModal')">API</button>
   </div>
 </header>
 
-<section class="studio-dock">
-  <div class="deck-row">
-    <!-- URL Input -->
-    <div class="input-wrapper">
-      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-      <input type="text" id="streamInput" placeholder="Paste YouTube link (e.g. https://www.youtube.com/watch?v=...)">
+<section class="control-dock">
+  <div class="dock-row">
+    <input type="text" id="streamInput" class="input-stream" placeholder="Enter YouTube Stream / Video URL or ID">
+
+    <div style="display:flex; align-items:center; gap:6px;">
+      <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">SCREENS:</span>
+      <input type="number" id="numScreensInput" class="input-stepper" value="12" min="1" max="12">
     </div>
 
-    <!-- Stepper & Quick Chips -->
-    <div class="stepper-group">
-      <span class="stepper-label">Screens:</span>
-      <input type="number" id="numScreensInput" class="stepper-input" value="12" min="1" max="12">
-      <div class="chip-group">
-        <button class="chip" onclick="setScreenQty(2)">2</button>
-        <button class="chip" onclick="setScreenQty(4)">4</button>
-        <button class="chip" onclick="setScreenQty(8)">8</button>
-        <button class="chip" onclick="setScreenQty(12)">12</button>
-        <button class="chip pro-section" onclick="setScreenQty(24)">24</button>
-      </div>
+    <div class="chip-bar">
+      <button class="chip" onclick="setScreenQty(2)">2</button>
+      <button class="chip" onclick="setScreenQty(4)">4</button>
+      <button class="chip" onclick="setScreenQty(8)">8</button>
+      <button class="chip" onclick="setScreenQty(12)">12</button>
+      <button class="chip pro-tag-only" onclick="setScreenQty(24)">24</button>
     </div>
 
-    <button class="btn-launch" id="openBtn" onclick="handleAddStream()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-      Launch Screens
-    </button>
+    <button class="btn-cyan" id="openBtn" onclick="handleAddStream()">+ Launch Matrix</button>
 
-    <!-- Pro Tools -->
-    <div class="input-wrapper pro-section" style="flex:1; min-width:200px;">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" id="searchInput" placeholder="Search YouTube keywords...">
+    <!-- Pro Keyword Search -->
+    <div class="pro-tag-only" style="display:flex; gap:8px; flex:1;">
+      <input type="text" id="searchInput" placeholder="Search YouTube keywords..." style="flex:1;">
+      <button class="btn-violet" onclick="searchYouTube()">Search & Add</button>
+      <button class="btn-violet" onclick="playRandomFromChannel()">🎲 Channel Random</button>
     </div>
-    <button class="btn-pro-action pro-section" onclick="searchYouTube()">Search & Add</button>
-    <button class="btn-pro-action pro-section" onclick="playRandomFromChannel()">🎲 Channel Random</button>
   </div>
 
-  <!-- Master Controls Bar -->
-  <div class="deck-row" style="justify-content: space-between;">
+  <!-- Master Control HUD -->
+  <div class="dock-row" style="justify-content: space-between;">
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-      <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Master Controls:</span>
-      <button onclick="controlAll('playVideo')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play All
-      </button>
-      <button onclick="controlAll('pauseVideo')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause All
-      </button>
-      <button onclick="controlAll('mute')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg> Mute All
-      </button>
-      <button onclick="controlAll('unMute')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> Unmute All
-      </button>
+      <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); letter-spacing:0.08em;">ENGINE CONTROLS:</span>
+      <button onclick="controlAll('playVideo')">▶ Play All</button>
+      <button onclick="controlAll('pauseVideo')">⏸ Pause All</button>
+      <button onclick="controlAll('mute')">🔇 Mute All</button>
+      <button onclick="controlAll('unMute')">🔊 Unmute All</button>
     </div>
 
     <div style="display:flex; gap:8px; align-items:center;">
-      <div id="activeCounter" class="counter-badge">Active: 0 / 12</div>
-      <button onclick="reloadAllScreens()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg> Reload All
-      </button>
-      <button class="btn-ghost-danger" onclick="clearAllScreens()">Clear Canvas</button>
+      <div id="activeCounter" class="status-pill">Active: 0 / 12</div>
+      <button onclick="reloadAllScreens()">🔄 Reload All</button>
+      <button class="btn-red" onclick="clearAllScreens()">Clear Matrix</button>
     </div>
   </div>
 </section>
 
-<!-- Active Video Stream Grid -->
+<!-- Screen Grid -->
 <main id="gridContainer">
-  <div class="empty-state" id="emptyState">
-    <div class="empty-icon">
-      <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5a2 2 0 0 0-2-2zm0 14H3V5h18v12z"/></svg>
-    </div>
-    <div class="empty-title">Ready for Stream Playback</div>
-    <div class="empty-desc">Paste a YouTube Video, Shorts, or Live URL into the command bar above and launch your multi-view wall.</div>
+  <div class="empty-hud" id="emptyHud">
+    <h2>Matrix Canvas Offline</h2>
+    <p>Paste any YouTube URL or Video ID above and click Launch Matrix to deploy multi-stream monitors.</p>
   </div>
 </main>
 
-<!-- Pro Activation Modal -->
-<div id="proModal" class="modal-overlay">
+<!-- Purchase & Unlock Modal -->
+<div id="purchaseModal" class="modal-overlay">
   <div class="modal-box">
-    <h3>Unlock MultiView Pro</h3>
-    <p>Activate unlimited simultaneous screens, auto-adaptive scaling, keyword search, and channel randomizer.</p>
-    <input type="password" id="proKeyInput" placeholder="Enter Access Passcode (default: PRO2026)" style="width:100%;">
+    <h3>Upgrade to Pro Matrix</h3>
+    <p>Unlock unlimited screens, auto-adaptive scaling, channel randomizer, and keyword search.</p>
+
+    <div class="plan-grid">
+      <!-- 24h Pass -->
+      <div class="plan-card highlight">
+        <span class="plan-title">24-Hour Day Pass</span>
+        <span class="plan-price">₹99</span>
+        <p style="font-size:0.75rem; margin-bottom:8px;">Instant 24-hour unlimited pass for this device.</p>
+        <button class="btn-cyan" onclick="openUpiPayment()">Pay ₹99 (UPI)</button>
+      </div>
+
+      <!-- Watch Ads Pass -->
+      <div class="plan-card">
+        <span class="plan-title">Watch 5 Ads</span>
+        <span class="plan-price">FREE</span>
+        <p style="font-size:0.75rem; margin-bottom:8px;">Watch 5 short sponsor ads to unlock 1 Hour of Pro.</p>
+        <button class="btn-violet" onclick="startAdWatcher()">Watch Ads</button>
+      </div>
+    </div>
+
     <div class="modal-actions">
-      <button onclick="closeModal('proModal')">Cancel</button>
-      <button class="btn-launch" onclick="verifyProKey()">Activate</button>
+      <button onclick="closeModal('purchaseModal')">Close</button>
     </div>
   </div>
 </div>
 
-<!-- API Key Modal -->
+<!-- UPI Payment Modal -->
+<div id="upiModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Instant UPI Checkout (₹99)</h3>
+    <p>Scan with Google Pay, PhonePe, Paytm or any UPI app to unlock 24 Hours of Pro Access.</p>
+    
+    <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:8px; text-align:center; margin-bottom:14px;">
+      <div style="font-family:'JetBrains Mono', monospace; font-size:1.1rem; color:var(--cyan); margin-bottom:4px;">UPI ID: payments@theblackinkbizz</div>
+      <div style="font-size:0.8rem; color:var(--text-muted);">Amount: ₹99.00 (Valid for 24 Hours)</div>
+    </div>
+
+    <input type="text" id="upiRefInput" placeholder="Enter 12-Digit UPI Ref / UTR Number" style="width:100%; margin-bottom:10px;">
+    
+    <div class="modal-actions">
+      <button onclick="closeModal('upiModal')">Cancel</button>
+      <button class="btn-cyan" onclick="verifyUpiPayment()">Verify & Activate</button>
+    </div>
+  </div>
+</div>
+
+<!-- Watch Ads Modal -->
+<div id="adModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="adHeaderTitle">Sponsor Reward Ad</h3>
+    <p id="adStatusText">Please wait while the sponsor message plays...</p>
+    
+    <div class="ad-progress-box">
+      <div style="font-family:'Orbitron', sans-serif; font-size:1.1rem; color:var(--cyan);" id="adStepText">AD 1 OF 5</div>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;" id="adTimerText">Timer: 5s remaining</div>
+      <div class="progress-bar-bg">
+        <div id="adProgressBar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="claimNextAdBtn" class="btn-cyan" disabled onclick="nextAdStep()">Claim & Next Ad</button>
+    </div>
+  </div>
+</div>
+
+<!-- Device-Locked Login Modal -->
+<div id="loginModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Device-Locked Account Login</h3>
+    <p>Credentials permanently bind to 1 device only upon first authentication.</p>
+    
+    <input type="text" id="loginIdInput" placeholder="Enter User ID (default: pro_master)" style="width:100%; margin-bottom:10px;">
+    <input type="password" id="loginPassInput" placeholder="Enter Password (default: cyber2026)" style="width:100%;">
+    
+    <div class="modal-actions">
+      <button onclick="closeModal('loginModal')">Cancel</button>
+      <button class="btn-violet" onclick="performDeviceLogin()">Authenticate</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Modal -->
 <div id="apiModal" class="modal-overlay">
   <div class="modal-box">
     <h3>YouTube API Credentials</h3>
-    <p>Required for YouTube search and channel random video selection. Your key is stored client-side in your browser.</p>
+    <p>Required for keyword searches and channel video randomizer.</p>
     <input type="text" id="apiKeyInput" placeholder="AIzaSy..." style="width:100%;">
     <div class="modal-actions">
       <button onclick="closeModal('apiModal')">Cancel</button>
-      <button class="btn-launch" onclick="saveApiKey()">Save Credentials</button>
+      <button class="btn-cyan" onclick="saveApiKey()">Save Credentials</button>
     </div>
   </div>
 </div>
 
 <footer>
-  <div>© 2026 MultiView Studio • Client-side sandboxed playback</div>
-  <div style="display:flex; gap:16px;">
-    <span>Zero Data Logging</span>
-    <span>YouTube Embedded API Compliant</span>
-  </div>
+  <div>CYBERVIEW MATRIX // Client-Side Multi-Player Architecture</div>
+  <div>Device ID: <span id="deviceFingerprintLabel" style="color:var(--cyan); font-family:'JetBrains Mono';"></span></div>
 </footer>
 
 <script>
   let isPro = false;
-  const PRO_PASSCODE = "PRO2026";
   let totalOpenedCount = 0;
   const FREE_MAX_ACTIVE = 12;
+  let countdownInterval = null;
 
-  // Restore Pro session
-  if (localStorage.getItem("mv_tier") === "pro") {
+  // 1. UNIQUE DEVICE FINGERPRINT (1 ACCOUNT PER DEVICE)
+  function getDeviceFingerprint() {
+    let devId = localStorage.getItem("dev_fingerprint");
+    if (!devId) {
+      const raw = navigator.userAgent + screen.width + "x" + screen.height + navigator.language + (navigator.hardwareConcurrency || 4);
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      devId = "DEV-" + Math.abs(hash).toString(16).toUpperCase();
+      localStorage.setItem("dev_fingerprint", devId);
+    }
+    return devId;
+  }
+
+  const CURRENT_DEVICE = getDeviceFingerprint();
+  document.getElementById("deviceFingerprintLabel").innerText = CURRENT_DEVICE;
+
+  // Seeded Account Registry (1 Device Binding Enforcement)
+  let userRegistry = JSON.parse(localStorage.getItem("user_registry")) || {
+    "pro_master": { pass: "cyber2026", boundDevice: null },
+    "vip_user": { pass: "vip99", boundDevice: null }
+  };
+
+  // 2. SESSION & COUNTDOWN ENGINE
+  function checkSessionExpiry() {
+    const expiry = parseInt(localStorage.getItem("pro_expiry_ts"), 10);
+    const clockEl = document.getElementById("countdownClock");
+
+    if (expiry && Date.now() < expiry) {
+      setProState(true);
+      clockEl.style.display = "inline-flex";
+      const remaining = expiry - Date.now();
+      const h = Math.floor(remaining / (3600 * 1000));
+      const m = Math.floor((remaining % (3600 * 1000)) / (60 * 1000));
+      const s = Math.floor((remaining % (60 * 1000)) / 1000);
+      clockEl.innerText = `PRO: ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+    } else {
+      if (isPro && expiry) {
+        alert("Pro session has ended. Reverting to Free Plan.");
+        logoutPro();
+      } else if (localStorage.getItem("mv_tier") === "pro" && !expiry) {
+        // Permanent credential login
+        setProState(true);
+        clockEl.style.display = "none";
+      } else {
+        setProState(false);
+        clockEl.style.display = "none";
+      }
+    }
+  }
+
+  setInterval(checkSessionExpiry, 1000);
+  checkSessionExpiry();
+
+  // 3. AUTHENTICATION (DEVICE-LOCKED)
+  function performDeviceLogin() {
+    const id = document.getElementById("loginIdInput").value.trim();
+    const pass = document.getElementById("loginPassInput").value.trim();
+
+    if (!userRegistry[id]) {
+      alert("Invalid User ID.");
+      return;
+    }
+
+    if (userRegistry[id].pass !== pass) {
+      alert("Incorrect Password.");
+      return;
+    }
+
+    // Check device binding
+    if (!userRegistry[id].boundDevice) {
+      // First time logging in -> Lock to this device
+      userRegistry[id].boundDevice = CURRENT_DEVICE;
+      localStorage.setItem("user_registry", JSON.stringify(userRegistry));
+      alert(`Account verified! This account is now permanently locked to this device (${CURRENT_DEVICE}).`);
+    } else if (userRegistry[id].boundDevice !== CURRENT_DEVICE) {
+      alert(`ACCESS DENIED!\n\nThis account is already registered to another device (${userRegistry[id].boundDevice}). Each Pro account is strictly limited to 1 device.`);
+      return;
+    }
+
+    localStorage.setItem("mv_tier", "pro");
+    localStorage.removeItem("pro_expiry_ts"); // Permanent login
     setProState(true);
-  } else {
-    setProState(false);
+    closeModal("loginModal");
+    alert("Welcome Pro Member!");
+  }
+
+  // 4. ₹99 24-HOUR PAYMENT SYSTEM
+  function openUpiPayment() {
+    closeModal("purchaseModal");
+    openModal("upiModal");
+  }
+
+  function verifyUpiPayment() {
+    const ref = document.getElementById("upiRefInput").value.trim();
+    if (!ref || ref.length < 8) {
+      alert("Please enter a valid 12-digit UPI transaction reference / UTR number.");
+      return;
+    }
+
+    // Activate 24 Hours from now
+    const expiry = Date.now() + (24 * 60 * 60 * 1000);
+    localStorage.setItem("pro_expiry_ts", expiry);
+    localStorage.setItem("mv_tier", "pro");
+    setProState(true);
+    closeModal("upiModal");
+    alert("Payment verified! 24-Hour Pro Matrix unlocked on this device.");
+  }
+
+  // 5. WATCH 5 ADS FOR 1 HOUR PRO
+  let adCount = 1;
+  let adTimer = 5;
+  let adTimerInterval = null;
+
+  function startAdWatcher() {
+    closeModal("purchaseModal");
+    openModal("adModal");
+    adCount = 1;
+    runAdStep();
+  }
+
+  function runAdStep() {
+    adTimer = 5;
+    document.getElementById("adStepText").innerText = `AD ${adCount} OF 5`;
+    document.getElementById("claimNextAdBtn").disabled = true;
+    document.getElementById("adProgressBar").style.width = `${(adCount - 1) * 20}%`;
+
+    clearInterval(adTimerInterval);
+    adTimerInterval = setInterval(() => {
+      adTimer--;
+      document.getElementById("adTimerText").innerText = `Timer: ${adTimer}s remaining`;
+      if (adTimer <= 0) {
+        clearInterval(adTimerInterval);
+        document.getElementById("claimNextAdBtn").disabled = false;
+        document.getElementById("adTimerText").innerText = `Ad finished! Click below to proceed.`;
+      }
+    }, 1000);
+  }
+
+  function nextAdStep() {
+    if (adCount < 5) {
+      adCount++;
+      runAdStep();
+    } else {
+      // Finished all 5 ads -> Grant 1 Hour
+      document.getElementById("adProgressBar").style.width = `100%`;
+      const expiry = Date.now() + (60 * 60 * 1000);
+      localStorage.setItem("pro_expiry_ts", expiry);
+      localStorage.setItem("mv_tier", "pro");
+      setProState(true);
+      closeModal("adModal");
+      alert("Congratulations! You watched 5 ads. 1-Hour Pro Pass activated!");
+    }
+  }
+
+  // 6. STREAM GENERATION & CONTROLS
+  function extractVideoId(rawUrl) {
+    if (!rawUrl) return null;
+    const s = rawUrl.trim();
+
+    if (s.includes("v=")) {
+      const afterV = s.split("v=").pop();
+      const idPart = afterV.slice(0, 11);
+      if (idPart.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(idPart)) return idPart;
+    }
+
+    const cleanUrl = s.split("?").shift();
+    const segments = cleanUrl.split("/");
+    const last = segments.pop();
+    if (last && last.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(last)) return last;
+
+    const tokens = s.match(/[a-zA-Z0-9_-]{11}/g);
+    if (tokens && tokens.length > 0) return tokens.pop();
+    return null;
+  }
+
+  function getActiveScreenCount() {
+    return document.querySelectorAll('#gridContainer .stream-card').length;
+  }
+
+  function updateScreenCounter() {
+    const current = getActiveScreenCount();
+    const counterEl = document.getElementById("activeCounter");
+    const emptyHud = document.getElementById("emptyHud");
+
+    if (emptyHud) emptyHud.style.display = current === 0 ? "flex" : "none";
+
+    if (counterEl) {
+      if (isPro) {
+        counterEl.innerText = `Active: ${current} (Pro: Unlimited)`;
+        counterEl.className = "status-pill active";
+      } else {
+        counterEl.innerText = `Active: ${current} / ${FREE_MAX_ACTIVE}`;
+        counterEl.className = "status-pill";
+      }
+    }
   }
 
   function setScreenQty(qty) {
@@ -595,60 +852,11 @@
     input.value = qty;
   }
 
-  // Pure string-slicing ID Extractor
-  function extractVideoId(rawUrl) {
-    if (!rawUrl) return null;
-    const s = rawUrl.trim();
-
-    if (s.includes("v=")) {
-      const afterV = s.split("v=").pop();
-      const idPart = afterV.slice(0, 11);
-      if (idPart.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(idPart)) {
-        return idPart;
-      }
-    }
-
-    const cleanUrl = s.split("?").shift();
-    const segments = cleanUrl.split("/");
-    const last = segments.pop();
-    if (last && last.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(last)) {
-      return last;
-    }
-
-    const tokens = s.match(/[a-zA-Z0-9_-]{11}/g);
-    if (tokens && tokens.length > 0) {
-      return tokens.pop();
-    }
-    return null;
-  }
-
-  function getActiveScreenCount() {
-    return document.querySelectorAll('#gridContainer .stream-card').length;
-  }
-
-  function updateScreenCounter() {
-    const current = getActiveScreenCount();
-    const counterEl = document.getElementById("activeCounter");
-    const emptyState = document.getElementById("emptyState");
-
-    if (emptyState) {
-      emptyState.style.display = current === 0 ? "flex" : "none";
-    }
-
-    if (counterEl) {
-      if (isPro) {
-        counterEl.innerText = `Active: ${current} (Pro: Unlimited)`;
-      } else {
-        counterEl.innerText = `Active: ${current} / ${FREE_MAX_ACTIVE}`;
-      }
-    }
-  }
-
   function handleAddStream() {
     const input = document.getElementById("streamInput");
     const numInput = document.getElementById("numScreensInput");
     const openBtn = document.getElementById("openBtn");
-    
+
     let requestedCount = parseInt(numInput.value, 10);
     if (isNaN(requestedCount) || requestedCount < 1) requestedCount = 1;
 
@@ -656,19 +864,19 @@
 
     if (!isPro) {
       if (currentActive >= FREE_MAX_ACTIVE) {
-        alert("You have reached the maximum limit of 12 active screens on the Free Plan.\n\nClick 'Unlock Pro' to run unlimited streams simultaneously.");
+        alert(`Maximum active screens reached (12/12) for Free Plan.\n\nClick 'Purchase Pro' for unlimited screens.`);
         return;
       }
       if (currentActive + requestedCount > FREE_MAX_ACTIVE) {
         const allowed = FREE_MAX_ACTIVE - currentActive;
-        alert(`Free Plan allows a maximum of 12 active screens.\nOpening ${allowed} screen(s) to reach your limit.`);
+        alert(`Free limit: You already have ${currentActive} active screens. Opening ${allowed} more to reach 12.`);
         requestedCount = allowed;
       }
     }
 
     const videoId = extractVideoId(input.value);
     if (!videoId) {
-      alert("Invalid YouTube URL. Please copy and paste a complete video link.");
+      alert("Please enter a valid YouTube Video link.");
       return;
     }
 
@@ -702,14 +910,10 @@
 
     card.innerHTML = `
       <div class="stream-header">
-        <span class="stream-num">Stream #${totalOpenedCount}</span>
-        <div class="stream-actions">
-          <button onclick="reloadScreen('${screenId}')" title="Reload Stream">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-          </button>
-          <button class="btn-remove-stream" onclick="removeScreen('${screenId}')" title="Close">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-          </button>
+        <span>SYS // STREAM #${totalOpenedCount}</span>
+        <div>
+          <button onclick="reloadScreen('${screenId}')" title="Reload Stream">🔄</button>
+          <button onclick="removeScreen('${screenId}')" title="Close">✕</button>
         </div>
       </div>
       <div class="video-wrapper">
@@ -789,15 +993,17 @@
 
     if (isPro) {
       document.body.classList.add("is-pro");
-      badge.className = "tier-pill tier-pro";
-      badge.innerText = "Pro Member";
+      badge.className = "brand-tag";
+      badge.style.borderColor = "var(--cyan)";
+      badge.innerText = "PRO MATRIX ACTIVE";
       loginBtn.style.display = "none";
       logoutBtn.style.display = "inline-flex";
       numInput.removeAttribute("max");
     } else {
       document.body.classList.remove("is-pro");
-      badge.className = "tier-pill tier-free";
-      badge.innerText = "Free Tier (Max 12)";
+      badge.className = "brand-tag";
+      badge.style.borderColor = "rgba(0, 242, 255, 0.4)";
+      badge.innerText = "Free Tier (12 Max)";
       loginBtn.style.display = "inline-flex";
       logoutBtn.style.display = "none";
       numInput.setAttribute("max", "12");
@@ -806,24 +1012,12 @@
     updateScreenCounter();
   }
 
-  function verifyProKey() {
-    const key = document.getElementById("proKeyInput").value.trim();
-    if (key === PRO_PASSCODE) {
-      setProState(true);
-      localStorage.setItem("mv_tier", "pro");
-      closeModal("proModal");
-      document.getElementById("proKeyInput").value = "";
-      alert("Pro tier activated!");
-    } else {
-      alert("Invalid Pro access key.");
-    }
-  }
-
   function logoutPro() {
-    if (confirm("Are you sure you want to log out of Pro?")) {
+    if (confirm("Logout of Pro?")) {
       localStorage.removeItem("mv_tier");
+      localStorage.removeItem("pro_expiry_ts");
       setProState(false);
-      alert("Logged out of Pro. Free limits (12 screens) now apply.");
+      checkSessionExpiry();
     }
   }
 
@@ -832,7 +1026,7 @@
     const apiKey = localStorage.getItem("yt_api_key");
     if (!apiKey) {
       alert("Please add a YouTube API Key in settings first.");
-      openApiModal();
+      openModal("apiModal");
       return;
     }
     if (!query) return;
@@ -849,7 +1043,7 @@
         alert("No videos found.");
       }
     } catch (err) {
-      alert("Error searching YouTube. Please verify your API Key.");
+      alert("Error searching YouTube. Verify API Key.");
     }
   }
 
@@ -859,7 +1053,7 @@
     const apiKey = localStorage.getItem("yt_api_key");
     if (!apiKey) {
       alert("Please add a YouTube API Key in settings first.");
-      openApiModal();
+      openModal("apiModal");
       return;
     }
 
@@ -886,17 +1080,12 @@
         alert("No uploaded videos found for this channel.");
       }
     } catch (e) {
-      alert("Could not load random video. Please verify your API Key.");
+      alert("Could not load random video. Verify API Key.");
     }
   }
 
   function openModal(id) { document.getElementById(id).style.display = "flex"; }
   function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-  function openApiModal() {
-    document.getElementById("apiKeyInput").value = localStorage.getItem("yt_api_key") || "";
-    openModal("apiModal");
-  }
 
   function saveApiKey() {
     const key = document.getElementById("apiKeyInput").value.trim();
